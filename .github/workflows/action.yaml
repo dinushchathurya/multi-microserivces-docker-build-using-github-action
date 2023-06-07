@@ -13,7 +13,7 @@ jobs:
       - name: Get modified microservices
         id: git-diff
         run: |
-            git diff --name-only origin/main | cut -d/ -f1 | sort -u > modified_microservices.txt
+            git diff --name-only origin/master | cut -d/ -f1 | sort -u > modified_microservices.txt
             cat modified_microservices.txt
             echo "Modified microservices: $(cat modified_microservices.txt)"
             echo "::set-output name=microservices::$(cat modified_microservices.txt)"
