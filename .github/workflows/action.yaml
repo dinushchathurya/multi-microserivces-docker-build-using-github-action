@@ -15,7 +15,15 @@ jobs:
         run: |
           for dir in $(find . -maxdepth 1 -type d -name '*-service'); do
             cd $dir
-            docker build -t limarktest/$dir:${{ github.sha }} .
+            # Extract microservice name from directory path
+            service_name=$(basename $dir)
+
+            # Remove any leading or trailing slashes
+            service_name=$(echo $service_name | sed 's#^/*\|/*$##g')
+
+            # Build Docker image with automatic image name
+            docker build -t limarktest/$service_name:${GITHUB_SHA::7} .
+
             cd ..
           done
 
