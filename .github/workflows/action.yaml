@@ -12,7 +12,9 @@ jobs:
       - name: Build Microservices
         run: |
           for dir in $(find . -maxdepth 1 -type d -name '*-service'); do
+
             cd $dir
+
             # Extract microservice name from directory path
             service_name=$(basename $dir)
 
@@ -22,9 +24,15 @@ jobs:
             # Build Docker image with automatic image name
             docker build -t limarktest/$service_name:${{ github.sha }} .
 
-            echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-
-            docker push limarktest/$service_name:${{ github.sha }}
-
             cd ..
+
           done
+      - name: Docker Login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - name: Push Docker Images
+        run: |
+          docker push limarktest/$service_name:${{ github.sha }}
+
