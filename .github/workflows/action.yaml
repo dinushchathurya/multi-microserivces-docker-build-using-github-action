@@ -22,29 +22,9 @@ jobs:
             # Build Docker image with automatic image name
             docker build -t limarktest/$service_name:${{ github.sha }} .
 
-            cd ..
-          done
-  push:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Push Docker Images
-        run: |
-          echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-          for dir in $(find . -maxdepth 1 -type d -name '*-service'); do
-            cd $dir
-            # Extract microservice name from directory path
-            service_name=$(basename $dir)
+            echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
 
-            # Remove any leading or trailing slashes
-            service_name=$(echo $service_name | sed 's#^/*\|/*$##g')
-
-            # Push Docker image to Docker Hub
             docker push limarktest/$service_name:${{ github.sha }}
 
             cd ..
           done
-      
-  
-
-      
