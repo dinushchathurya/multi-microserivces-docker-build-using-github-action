@@ -11,21 +11,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       
-      - name: Identify Modified Microservices
-        id: diff
-        run: |
-          git fetch --depth=1 origin ${GITHUB_SHA}
-          modified_services=$(git diff --name-only FETCH_HEAD | grep -oE '^microservice\d+')
-          echo "::set-output name=modified_services::$modified_services"
-
       - name: Build Microservices
         run: |
-          modified_services=(${{ steps.diff.outputs.modified_services }})
-
-          for service in "${modified_services[@]}"; do
-            cd "$service"
-            ls -la
-            # Run build commands specific to the microservice
+          for dir in $(find . -maxdepth 1 -type d -name '*-service'); do
+            cd $dir
+            echo "Building $dir"
             cd ..
           done
 
