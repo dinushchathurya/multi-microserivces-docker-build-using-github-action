@@ -12,6 +12,11 @@ jobs:
       - name: Set outputs
         id: vars
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: Determine changed microservices
+        id: changed_microservices
+        run: |
+          changed_dirs=$(git diff --name-only HEAD^ HEAD | xargs -I {} dirname {})
+          echo "::set-output name=dirs::$changed_dirs"
       - name: Build Microservices
         run: |
           for dir in $(find . -maxdepth 1 -type d -name '*-service'); do
