@@ -34,5 +34,19 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
       - name: Push Docker Images
         run: |
-          docker push limarktest/$service_name:${{ github.sha }}
+          for dir in $(find . -maxdepth 1 -type d -name '*-service'); do
 
+            cd $dir
+
+            # Extract microservice name from directory path
+            service_name=$(basename $dir)
+
+            # Remove any leading or trailing slashes
+            service_name=$(echo $service_name | sed 's#^/*\|/*$##g')
+
+            docker push limarktest/$service_name:${{ github.sha }}
+
+            cd ..
+
+          done
+          
