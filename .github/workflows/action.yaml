@@ -11,10 +11,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       
-      - name: Determine modified services
-        id: determine-modified
+      - name: Build Microservices
         run: |
-          git diff --name-only ${{ github.event.before }}...${{ github.sha }} | grep -E '^[a-zA-Z0-9_-]+-service$' -o | sort -u | tr '\n' ',' | sed 's/,$//' >> modified-services.txt
-          echo "::set-output name=modified_services::$(cat modified-services.txt)"
+          for dir in $(find . -maxdepth 1 -type d -name '*-service'); do
+            cd $dir
+            ls -la
+            cd ..
+          done
 
       
