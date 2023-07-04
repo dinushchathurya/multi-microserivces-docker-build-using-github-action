@@ -22,7 +22,7 @@ jobs:
             service_name=$(echo $service_name | sed 's#^/*\|/*$##g')
 
             # Build Docker image with automatic image name
-            docker build -t limarktest/$service_name:${GITHUB_SHA::7} .
+            docker build -t limarktest/$service_name:${{ github.sha }} .
 
             cd ..
           done
