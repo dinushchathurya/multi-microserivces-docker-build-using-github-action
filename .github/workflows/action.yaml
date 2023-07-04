@@ -15,7 +15,7 @@ jobs:
         run: |
           for dir in $(find . -maxdepth 1 -type d -name '*-service'); do
             cd $dir
-            echo "Building $dir"
+            docker build -t limarktest/$dir:${{ github.sha }} .
             cd ..
           done
 
