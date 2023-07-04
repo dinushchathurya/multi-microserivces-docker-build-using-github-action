@@ -9,6 +9,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      - name: Set outputs
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       - name: Build Microservices
         run: |
           for dir in $(find . -maxdepth 1 -type d -name '*-service'); do
@@ -22,7 +25,7 @@ jobs:
             service_name=$(echo $service_name | sed 's#^/*\|/*$##g')
 
             # Build Docker image with automatic image name
-            docker build -t limarktest/$service_name:${{ github.sha }} .
+            docker build -t limarktest/$service_name:${{ steps.vars.outputs.sha_short }} .
 
             cd ..
 
@@ -44,7 +47,7 @@ jobs:
             # Remove any leading or trailing slashes
             service_name=$(echo $service_name | sed 's#^/*\|/*$##g')
 
-            docker push limarktest/$service_name:${{ github.sha }}
+            docker push limarktest/$service_name:${{ steps.vars.outputs.sha_short }}
 
             cd ..
 
