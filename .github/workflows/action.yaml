@@ -21,10 +21,27 @@ jobs:
             changed_dirs=""
           fi
           echo "::set-output name=dirs::$changed_dirs"
-      - name: Build Microservices
-        run: |
-          for dir in $(find . -maxdepth 1 -type d -name '*-service'); do
+      # - name: Build Microservices
+      #   run: |
+      #     for dir in $(find . -maxdepth 1 -type d -name '*-service'); do
 
+      #       cd $dir
+
+      #       # Extract microservice name from directory path
+      #       service_name=$(basename $dir)
+
+      #       # Remove any leading or trailing slashes
+      #       service_name=$(echo $service_name | sed 's#^/*\|/*$##g')
+
+      #       # Build Docker image with automatic image name
+      #       docker build -t limarktest/$service_name:${{ steps.vars.outputs.sha_short }} .
+
+      #       cd ..
+
+      #     done
+      - name: Build and Push Microservices
+        run: |
+          for dir in ${{ steps.changed_microservices.outputs.dirs }}; do
             cd $dir
 
             # Extract microservice name from directory path
@@ -36,8 +53,10 @@ jobs:
             # Build Docker image with automatic image name
             docker build -t limarktest/$service_name:${{ steps.vars.outputs.sha_short }} .
 
-            cd ..
+            # Push Docker image to Docker Hub
+            docker push limarktest/$service_name:${{ steps.vars.outputs.sha_short }}
 
+            cd ..
           done
       - name: Docker Login
         uses: docker/login-action@v2
