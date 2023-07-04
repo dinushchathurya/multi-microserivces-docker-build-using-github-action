@@ -15,7 +15,11 @@ jobs:
       - name: Determine changed microservices
         id: changed_microservices
         run: |
-          changed_dirs=$(git diff --name-only HEAD^ HEAD | xargs -I {} dirname {})
+          if git rev-parse --verify HEAD^ >/dev/null 2>&1; then
+            changed_dirs=$(git diff --name-only HEAD^ HEAD | xargs -I {} dirname {})
+          else
+            changed_dirs=""
+          fi
           echo "::set-output name=dirs::$changed_dirs"
       - name: Build Microservices
         run: |
